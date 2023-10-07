@@ -1,0 +1,163 @@
+﻿@page "/"
+
+@*Freeze="FreezeDirection.Left" IsFrozen="true"*@
+<div @onclick="HandleClick" @oncontextmenu="HandleRightClick" @oncontextmenu:preventDefault="true">
+    this is a div
+</div>
+
+
+@if (OrderIDFreezeDirection == FreezeDirection.Left)
+{
+    <SfGrid @ref="Grid"
+            DataSource="@Orders"
+            Height="400"
+            Width="1000"
+            FrozenColumns="2"
+            AllowFreezeLineMoving="true"
+            EnableHover="true"
+            AllowFiltering="true"
+            AllowGrouping="true"
+            AllowSorting="true"
+            AllowPaging="true"
+            AllowSelection="true"
+            AllowTextWrap="true"
+            ColumnMenuItems="@(new List<ColumnMenuItemModel>() { new ColumnMenuItemModel { Text = "Change Freeze Direction", Id = "OrderID" } })" ShowColumnMenu="true">
+        <GridEvents ColumnMenuItemClicked="ColumnMenuItemClickedHandler" TValue="Order"></GridEvents>
+
+        <GridPageSettings PageCount="5" PageSize="@pagesize" PageSizes="@pagesizes"></GridPageSettings>
+        <GridFilterSettings Mode="FilterBarMode.Immediate" ImmediateModeDelay="300"></GridFilterSettings>
+        <GridGroupSettings ShowGroupedColumn=false EnableLazyLoading="true"></GridGroupSettings>
+        <GridEditSettings AllowEditing="true" AllowAdding="true" AllowDeleting="true" />
+
+        <GridColumns>
+            @* <GridColumn Field=@nameof(Order.OrderID) Freeze="@OrderIDFreezeDirection" IsFrozen="true" HeaderText="Order ID" TextAlign="TextAlign.Center" Width="120"></GridColumn> *@
+            <GridColumn Field=@nameof(Order.OrderID) HeaderText="Order ID" TextAlign="TextAlign.Center" Width="120"></GridColumn>
+            <GridColumn Field=@nameof(Order.CustomerID) HeaderText="Customer Name" Width="150" TextAlign="TextAlign.Center" ShowColumnMenu="false"></GridColumn>
+            <GridColumn HeaderText="Group Fields" TextAlign="TextAlign.Center">
+                <GridColumns>
+                    <GridColumn Field=@nameof(Order.CheckTest) HeaderText="Check Test" TextAlign="TextAlign.Center" Width="90" ShowColumnMenu="false" Type="ColumnType.Boolean" DisplayAsCheckBox="true" EditType="EditType.BooleanEdit"></GridColumn>
+                    <GridColumn Field=@nameof(Order.OrderDate) HeaderText="Order Date" Format="d" Type="ColumnType.Date" TextAlign="TextAlign.Center" Width="130" ShowColumnMenu="false"></GridColumn>
+                    <GridColumn Field=@nameof(Order.Freight) HeaderText="Freight" Format="C2" TextAlign="TextAlign.Center" Width="120" ShowColumnMenu="false"></GridColumn>
+                    <GridColumn Field=@nameof(Order.ShipName) HeaderText="Ship Name" Width="150" ShowColumnMenu="false"></GridColumn>
+                    <GridColumn Field=@nameof(Order.ShipCity) HeaderText="Ship City" Width="150" ShowColumnMenu="false"></GridColumn>
+                </GridColumns>
+            </GridColumn>
+            <GridColumn Field=@nameof(Order.Mail) HeaderText="Mail" Width="150" ShowColumnMenu="false"></GridColumn>
+            <GridColumn Field=@nameof(Order.Location) HeaderText="Location" Width="150" ShowColumnMenu="false"></GridColumn>
+        </GridColumns>
+    </SfGrid>
+}
+else if (OrderIDFreezeDirection == FreezeDirection.Right)
+{
+    <SfGrid @ref="Grid"
+            DataSource="@Orders"
+            Height="400"
+            Width="1000"
+            EnableHover="true"
+            AllowFiltering="true"
+            AllowGrouping="true"
+            AllowSorting="true"
+            AllowPaging="true"
+            AllowSelection="true"
+            AllowTextWrap="true"
+            AllowFreezeLineMoving="true"
+            ColumnMenuItems="@(new List<ColumnMenuItemModel>() { new ColumnMenuItemModel { Text = "Change Freeze Direction", Id = "OrderID" } })" ShowColumnMenu="true">
+        <GridEvents ColumnMenuItemClicked="ColumnMenuItemClickedHandler" TValue="Order"></GridEvents>
+
+        <GridPageSettings PageCount="5" PageSize="@pagesize" PageSizes="@pagesizes"></GridPageSettings>
+        <GridFilterSettings Mode="FilterBarMode.Immediate" ImmediateModeDelay="300"></GridFilterSettings>
+        <GridGroupSettings ShowGroupedColumn=false EnableLazyLoading="true"></GridGroupSettings>
+        <GridEditSettings AllowEditing="true" AllowAdding="true" AllowDeleting="true" />
+
+        <GridColumns>
+            <GridColumn Field=@nameof(Order.OrderID) Freeze="@OrderIDFreezeDirection" IsFrozen="true" HeaderText="Order ID" TextAlign="TextAlign.Center" Width="120"></GridColumn>
+            <GridColumn Field=@nameof(Order.CustomerID) HeaderText="Customer Name" Width="150" TextAlign="TextAlign.Center" ShowColumnMenu="false"></GridColumn>
+            <GridColumn HeaderText="Group Fields" TextAlign="TextAlign.Center">
+                <GridColumns>
+                    <GridColumn Field=@nameof(Order.CheckTest) HeaderText="Check Test" Width="80" ShowColumnMenu="false" Type="ColumnType.Boolean" DisplayAsCheckBox="true" EditType="EditType.BooleanEdit"></GridColumn>
+                    <GridColumn Field=@nameof(Order.OrderDate) HeaderText="Order Date" Format="d" Type="ColumnType.Date" TextAlign="TextAlign.Center" Width="130" ShowColumnMenu="false"></GridColumn>
+                    <GridColumn Field=@nameof(Order.Freight) HeaderText="Freight" Format="C2" TextAlign="TextAlign.Center" Width="120" ShowColumnMenu="false"></GridColumn>
+                    <GridColumn Field=@nameof(Order.ShipName) HeaderText="Ship Name" Width="150" ShowColumnMenu="false"></GridColumn>
+                    <GridColumn Field=@nameof(Order.ShipCity) HeaderText="Ship City" Width="150" ShowColumnMenu="false"></GridColumn>
+                </GridColumns>
+            </GridColumn>
+            <GridColumn Field=@nameof(Order.Mail) HeaderText="Mail" Width="150" ShowColumnMenu="false"></GridColumn>
+            <GridColumn Field=@nameof(Order.Location) HeaderText="Location" Width="150" ShowColumnMenu="false"></GridColumn>
+        </GridColumns>
+    </SfGrid>
+}
+@code {
+    SfGrid<Order> Grid { get; set; }
+    public List<Order> Orders { get; set; }
+    public FreezeDirection OrderIDFreezeDirection { get; set; } = FreezeDirection.Left;
+
+    public int pagesize { get; set; } = 50;
+    public object[] pagesizes = new object[] { 20, 50, 100, "All" };
+
+    public void ColumnMenuItemClickedHandler(ColumnMenuClickEventArgs args)
+    {
+        if (args.Item.Id == "OrderID")
+        {
+            if (OrderIDFreezeDirection == FreezeDirection.Left)
+            {
+                OrderIDFreezeDirection = FreezeDirection.Right;
+            }
+            else
+            {
+                OrderIDFreezeDirection = FreezeDirection.Left;
+            }
+        }
+    }
+
+    void HandleClick(MouseEventArgs args)
+    {
+        Console.WriteLine("This is a left click");
+    }
+
+    void HandleRightClick(MouseEventArgs args)
+    {
+        if (args.Button == 2)
+            Console.WriteLine("This is a right click");
+    }
+
+    public MenuItem SelectedItem;
+    // Triggers when the item is selected
+    private void selectedHandler(MenuEventArgs<MenuItem> args)
+    {
+        SelectedItem = args.Item;
+    }
+    
+    protected override void OnInitialized()
+    {
+        Orders = Enumerable.Range(1, 20).Select(x => new Order()
+            {
+                OrderID = 1000 + x,
+                CustomerID = (new string[] { "ALFKI", "ANANTR", "ANTON", "BLONP", "BOLID" })[new Random().Next(5)],
+                Freight = 2.1 * x,
+                EmployeeID = x,
+                OrderDate = DateTime.Now.AddDays(-x),
+                ShipCountry = (new string[] { "USA", "UK", "JAPAN" })[new Random().Next(3)],
+                ShipName = "MOS",
+                ShipCity = (new string[] { "New york", "London", "Hue" })[new Random().Next(3)],
+                ShipAddress = (new string[] { "55, Baker street", "65/5 Kings landing", "56, Winterfell" })[new Random().Next(3)],
+                Mail = (new string[] { "alf32@arpy.com", "anat81@jourrapide.com", "anton99@rpy.com", "blonp97@gmail.com", "bolid@mail.com" })[new Random().Next(5)],
+                CheckTest = (new bool[] { true, false })[new Random().Next(2)],
+                Location = (new string[] { "Morbi Leo", "Sed Blandit", "Congue Nisi", "Aliquet Lectus", "Viverra Mauris In" })[new Random().Next(5)]
+            }).ToList();
+    }
+    public class Order
+    {
+        public int? OrderID { get; set; }
+        public string CustomerID { get; set; }
+        public int? EmployeeID { get; set; }
+        public DateTime? OrderDate { get; set; }
+        public double? Freight { get; set; }
+        public string ShipCountry { get; set; }
+        public string ShipCity { get; set; }
+        public string ShipName { get; set; }
+        public string ShipAddress { get; set; }
+        public string Mail { get; set; }
+        public bool CheckTest { get; set; }
+        public string Location { get; set; }
+    }
+}
